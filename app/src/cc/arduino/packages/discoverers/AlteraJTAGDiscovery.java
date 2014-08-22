@@ -27,67 +27,69 @@
  * Copyright 2013 Arduino LLC (http://www.arduino.cc/)
  */
 
-package cc.arduino.packages;
-
-import cc.arduino.packages.discoverers.NetworkDiscovery;
-import cc.arduino.packages.discoverers.SerialDiscovery;
-import cc.arduino.packages.discoverers.AlteraJTAGDiscovery;
+package cc.arduino.packages.discoverers;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static processing.app.I18n._;
+import processing.app.Base;
+import processing.app.Platform;
+import processing.app.helpers.PreferencesMap;
+import cc.arduino.packages.BoardPort;
+import cc.arduino.packages.Discovery;
 
-public class DiscoveryManager {
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.Executor;
+import processing.app.tools.ExternalProcessExecutor;
+import java.io.ByteArrayOutputStream;
 
-  private final List<Discovery> discoverers;
+public class AlteraJTAGDiscovery implements Discovery {
 
-  public DiscoveryManager() {
-    discoverers = new ArrayList<Discovery>();
-    discoverers.add(new SerialDiscovery());
-    discoverers.add(new NetworkDiscovery());
-    discoverers.add(new AlteraJTAGDiscovery());
-
-    // Start all discoverers
-    for (Discovery d : discoverers) {
-      try {
-        d.start();
-      } catch (Exception e) {
-        System.err.println(_("Error starting discovery method: ") + d.getClass());
-        e.printStackTrace();
-      }
-    }
-
-    Thread closeHook = new Thread(new Runnable() {
-      @Override
-      public void run() {
-        for (Discovery d : discoverers) {
-          try {
-            d.stop();
-          } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-          }
-        }
-      }
-    });
-    Runtime.getRuntime().addShutdownHook(closeHook);
-  }
-
+  @Override
   public List<BoardPort> discovery() {
+    Platform os = Base.getPlatform();
+    String devicesListOutput = os.preListAllCandidateDevices();
+
     List<BoardPort> res = new ArrayList<BoardPort>();
-    for (Discovery d : discoverers) {
-      res.addAll(d.discovery());
+
+    List<String> ports =new ArrayList<String>();
+
+	String port = "usb_blaster";
+	
+	
+	ports.add(port);
+      BoardPort boardPort = new BoardPort();
+      boardPort.setAddress(port);
+      boardPort.setProtocol("alterajtag");
+      boardPort.setBoardName(null);
+      boardPort.setLabel("USB Blaster");
+      res.add(boardPort);
+	  
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    Executor executor = new ExternalProcessExecutor(baos);
+
+    try {
+      String listComPorts = "c:\\altera\\13.1\\quartus\\bin\\jtagconfig";
+
+      CommandLine toDevicePath = CommandLine.parse(listComPorts);
+      executor.execute(toDevicePath);
+	  System.out.println(new String(baos.toByteArray()));
+    } catch (Throwable e) {
     }
+	  
     return res;
   }
 
-  public BoardPort find(String address) {
-    for (BoardPort boardPort : discovery()) {
-      if (boardPort.getAddress().equals(address)) {
-        return boardPort;
-      }
-    }
-    return null;
+  @Override
+  public void setPreferences(PreferencesMap options) {
+  }
+
+  @Override
+  public void start() {
+  }
+
+  @Override
+  public void stop() {
   }
 
 }

@@ -29,6 +29,7 @@
 
 package cc.arduino.packages;
 
+import cc.arduino.packages.uploaders.AlteraJTAGUploader;
 import cc.arduino.packages.uploaders.SSHUploader;
 import cc.arduino.packages.uploaders.SerialUploader;
 import processing.app.AbstractMonitor;
@@ -37,9 +38,20 @@ import processing.app.NetworkMonitor;
 import processing.app.SerialMonitor;
 import processing.app.debug.TargetBoard;
 
+import static processing.app.I18n._;
+import static processing.app.I18n.format;
+
 public class UploaderAndMonitorFactory {
 
   public Uploader newUploader(TargetBoard board, BoardPort port) {
+	System.out
+	  .println(format(_("uploadviajtag: {0} protocol: {1} board name:{2} port: {3}"),
+                          board.getPreferences().get("upload.via_alterajtag"),
+                          port.getProtocol(), board.getName(), port.getLabel() ));
+
+    if ("true".equals(board.getPreferences().get("upload.via_alterajtag")) && port != null && "alterajtag".equals(port.getProtocol())) {
+      return new AlteraJTAGUploader();
+    }
     if ("true".equals(board.getPreferences().get("upload.via_ssh")) && port != null && "network".equals(port.getProtocol())) {
       return new SSHUploader(port);
     }

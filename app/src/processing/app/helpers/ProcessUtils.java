@@ -4,6 +4,8 @@ import processing.app.Base;
 
 import java.io.IOException;
 import java.util.Map;
+import static processing.app.I18n._;
+import static processing.app.I18n.format;
 
 public class ProcessUtils {
 
@@ -20,8 +22,12 @@ public class ProcessUtils {
     // http://bugs.sun.com/view_bug.do?bug_id=6518827
     String[] cmdLine = new String[command.length];
     for (int i = 0; i < command.length; i++)
+	{
       cmdLine[i] = command[i].replace("\"", "\\\"");
-
+	  // hack to havefile paths passed to cygwin working under windows
+      cmdLine[i] = command[i].replace("\\", "/");
+	}
+		
     ProcessBuilder pb = new ProcessBuilder(cmdLine);
     Map<String, String> env = pb.environment();
     env.put("CYGWIN", "nodosfilewarning");

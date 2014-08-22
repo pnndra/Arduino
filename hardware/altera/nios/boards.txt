@@ -1,0 +1,20 @@
+# See: http://code.google.com/p/arduino/wiki/Platforms
+
+menu.cpu=Processor
+
+##############################################################
+
+max10starter.name=MAX 10 Starter Kit
+max10starter.maximum_size=1000000
+max10starter.speed=115200
+max10starter.serial.port=usb_blaster
+
+max10starter.upload.via_alterajtag=true
+max10starter.upload.protocol=alterajtag
+max10starter.upload.tool=alterajtagtool
+
+max10starter.build.mcu=nios
+max10starter.build.f_cpu=16000000L
+max10starter.build.core=altera
+max10starter.build.variant=standard
+

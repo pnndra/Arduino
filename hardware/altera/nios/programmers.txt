@@ -1,0 +1,9 @@
+usbblaster.name=USB Blaster
+usbblaster.communication=usb
+usbblaster.protocol=altera
+usbblaster.program.protocol=altera
+usbblaster.program.tool=avrdude
+usbblaster.program.extra_params=
+usbblaster.program.params.quiet=
+usbblaster.program.params.verbose=
+usbblaster.program.pattern="{path}/Nios II Command Shell.bat" ` /bin/cygpath -u "{build.path}/{build.project_name}.elf" `

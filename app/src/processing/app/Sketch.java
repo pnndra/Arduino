@@ -1690,6 +1690,7 @@ public class Sketch {
     TargetPlatform target = Base.getTargetPlatform();
     String board = Preferences.get("board");
 
+    editor.statusNotice(_("Uploading..."));
     BoardPort boardPort = Base.getDiscoveryManager().find(Preferences.get("serial.port"));
 
     Uploader uploader = new UploaderAndMonitorFactory().newUploader(target.getBoards().get(board), boardPort);
